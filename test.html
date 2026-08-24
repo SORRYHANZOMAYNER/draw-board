@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Test</h1>
+<button onclick="sendDraw()">Отправить штрих</button>
+<pre id="log"></pre>
+
+<script>
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
+  const log = document.getElementById('log');
+
+  stompClient.connect({}, function () {
+    log.textContent += 'Connected!\n';
+
+    // Подписываемся на комнату 1
+    stompClient.subscribe('/topic/room/1', function (message) {
+      log.textContent += 'Received: ' + message.body + '\n';
+    });
+  });
+
+  function sendDraw() {
+    stompClient.send('/app/room/1/draw', {}, JSON.stringify({
+      type: 'STROKE_START',
+      strokeId: 'stroke-1',
+      x: 100,
+      y: 200,
+      color: '#000000',
+      width: 3
+    }));
+    log.textContent += 'Sent STROKE_START\n';
+  }
+</script>
+</body>
+</html>

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {"com.draw.board", "components"})
 @EnableJpaRepositories(basePackages = "components.repositories")
-@EntityScan(basePackages = "components.entities")
+@EntityScan(basePackages = {"components.entities", "components.scan"})
 public class BoardApplication {
 
 	public static void main(String[] args) {
