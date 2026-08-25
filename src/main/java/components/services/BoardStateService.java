@@ -33,6 +33,13 @@ public class BoardStateService {
         copy.setY(source.getY());
         copy.setColor(source.getColor());
         copy.setWidth(source.getWidth());
+        copy.setImageId(source.getImageId());
+        copy.setData(source.getData());
+        copy.setImageWidth(source.getImageWidth());
+        copy.setImageHeight(source.getImageHeight());
+        copy.setHeight(source.getHeight());
+        copy.setStickerId(source.getStickerId());
+        copy.setText(source.getText());
         return copy;
     }
 }
