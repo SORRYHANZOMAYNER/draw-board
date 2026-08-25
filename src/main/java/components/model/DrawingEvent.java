@@ -10,8 +10,8 @@ public class DrawingEvent {
     private Double x;
     private Double y;
     private String color;
-    private Integer width;
-    private Integer height;
+    private Double width;
+    private Double height;
     private String imageId;
     private String data;
     private Double imageWidth;
@@ -33,11 +33,11 @@ public class DrawingEvent {
         this.text = text;
     }
 
-    public Integer getHeight() {
+    public Double getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(Double height) {
         this.height = height;
     }
 
@@ -124,11 +124,11 @@ public class DrawingEvent {
         this.color = color;
     }
 
-    public Integer getWidth() {
+    public Double getWidth() {
         return width;
     }
 
-    public void setWidth(Integer width) {
+    public void setWidth(Double width) {
         this.width = width;
     }
 }
