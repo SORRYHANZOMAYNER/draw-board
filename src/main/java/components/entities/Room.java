@@ -14,13 +14,13 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     public String name;
-    public Date created_at;
+    public Date createdAt;
     public Long ownerId;
     public Long createdById;
 
     public Room(String name){
         this.name = name;
-        this.created_at = new Date();
+        this.createdAt = new Date();
     }
 
     public Room() {
@@ -36,11 +36,11 @@ public class Room {
     }
 
     public Date getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date created_at) {
+        this.createdAt = created_at;
     }
     public void setId(Long id) {
         this.id = id;
@@ -59,11 +59,11 @@ public class Room {
         this.ownerId = ownerId;
     }
 
-    public Long getCreated_by_id() {
+    public Long getCreatedById() {
         return createdById;
     }
 
-    public void setCreated_by_id(Long createdById) {
+    public void setCreatedById(Long createdById) {
         this.createdById = createdById;
     }
 }

@@ -2,16 +2,15 @@ package components.dto;
 
 import components.entities.Role;
 
-public class AuthResponse {
-
+public class UserBriefResponse {
     private Long userId;
     private String username;
     private Role role;
 
-    public AuthResponse() {
+    public UserBriefResponse() {
     }
 
-    public AuthResponse(Long userId, String username, Role role) {
+    public UserBriefResponse(Long userId, String username, Role role) {
         this.userId = userId;
         this.username = username;
         this.role = role;

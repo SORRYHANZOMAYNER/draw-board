@@ -5,10 +5,11 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-public class User {
+public class Userat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
     private Role role;
     private Date createAt;
