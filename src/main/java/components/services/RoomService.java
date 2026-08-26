@@ -49,7 +49,7 @@ public class RoomService {
     }
 
     public List<Room> findMine(Userat user) {
-        return roomRepository.findByOwnerIdOrderByCreated_atDesc(user.getId());
+        return roomRepository.findByOwnerIdOrderByCreatedAtDesc(user.getId());
     }
 
     public List<Room> findByStudent(Userat teacher, Long studentId) {
@@ -58,7 +58,7 @@ public class RoomService {
         if (student.getRole() != components.entities.Role.STUDENT) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Target user is not a student");
         }
-        return roomRepository.findByOwnerIdOrderByCreated_atDesc(studentId);
+        return roomRepository.findByOwnerIdOrderByCreatedAtDesc(studentId);
     }
 
     public Room getRoom(Userat user, Long id) {

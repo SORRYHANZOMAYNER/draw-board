@@ -1,5 +1,6 @@
 package components.controllers;
 
+import components.config.SecurityUtils;
 import components.dto.AuthResponse;
 import components.dto.LoginRequest;
 import components.dto.RegisterRequest;
@@ -28,5 +29,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthResponse> me() {
+        return ResponseEntity.ok(authService.getMe(SecurityUtils.getCurrentUser()));
     }
 }

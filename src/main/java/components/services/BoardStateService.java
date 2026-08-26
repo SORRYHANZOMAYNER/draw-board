@@ -1,27 +1,41 @@
 package components.services;
-
+import components.entities.DrawingEventEntity;
 import components.model.DrawingEvent;
+import components.repositories.DrawingEventRepository;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class BoardStateService {
 
-    private final Map<Long, List<DrawingEvent>> roomEvents = new ConcurrentHashMap<>();
+    private final DrawingEventRepository drawingEventRepository;
+    private final ObjectMapper objectMapper;
+
+    public BoardStateService(DrawingEventRepository drawingEventRepository, ObjectMapper objectMapper) {
+        this.drawingEventRepository = drawingEventRepository;
+        this.objectMapper = objectMapper;
+    }
 
     public void addEvent(Long roomId, DrawingEvent event) {
-        roomEvents
-                .computeIfAbsent(roomId, id -> new CopyOnWriteArrayList<>())
-                .add(copyEvent(event));
+        event.setRoomId(roomId);
+        DrawingEvent copy = copyEvent(event);
+
+        String payload = objectMapper.writeValueAsString(copy);
+        drawingEventRepository.save(new DrawingEventEntity(roomId, payload));
     }
 
     public List<DrawingEvent> getSnapshot(Long roomId) {
-        return new ArrayList<>(roomEvents.getOrDefault(roomId, List.of()));
+        List<DrawingEventEntity> stored = drawingEventRepository.findByRoomIdOrderByIdAsc(roomId);
+        List<DrawingEvent> result = new ArrayList<>(stored.size());
+
+        for (DrawingEventEntity entity : stored) {
+            result.add(objectMapper.readValue(entity.getPayload(), DrawingEvent.class));
+        }
+
+        return result;
     }
 
     private DrawingEvent copyEvent(DrawingEvent source) {

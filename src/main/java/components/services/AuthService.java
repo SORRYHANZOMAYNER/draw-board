@@ -16,10 +16,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
     @Autowired
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
     public AuthResponse  register(RegisterRequest request){
         if (request.getUsername() == null || request.getUsername().isBlank()) {
@@ -35,7 +37,10 @@ public class AuthService {
         userat.setUsername(request.getUsername().trim());
         userat.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         userat.setRole(Role.STUDENT);
-        return toAuthResponse(userRepository.save(userat));
+        return toAuthResponse(userRepository.save(userat),true);
+    }
+    public AuthResponse getMe(Userat user) {
+        return toAuthResponse(user, false);
     }
     public AuthResponse  login(LoginRequest request){
         if (request.getUsername() == null || request.getPassword() == null) {
@@ -46,12 +51,13 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), userat.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
-        return toAuthResponse(userat);
+        return toAuthResponse(userat, true);
     }
     public Userat findById(Long id){
         return userRepository.findById(id).orElse(null);
     }
-    public AuthResponse toAuthResponse(Userat userat) {
-        return new AuthResponse(userat.getId(), userat.getUsername(), userat.getRole());
+    private AuthResponse toAuthResponse(Userat user, boolean withToken) {
+        String token = withToken ? jwtService.generateToken(user) : null;
+        return new AuthResponse(token, user.getId(), user.getUsername(), user.getRole());
     }
 }
