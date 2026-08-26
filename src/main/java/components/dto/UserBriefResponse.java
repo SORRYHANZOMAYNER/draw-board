@@ -3,25 +3,25 @@ package components.dto;
 import components.entities.Role;
 
 public class UserBriefResponse {
-    private Long userId;
+    private Long id;
     private String username;
     private Role role;
 
     public UserBriefResponse() {
     }
 
-    public UserBriefResponse(Long userId, String username, Role role) {
-        this.userId = userId;
+    public UserBriefResponse(Long id, String username, Role role) {
+        this.id = id;
         this.username = username;
         this.role = role;
     }
 
     public Long getUserId() {
-        return userId;
+        return id;
     }
 
     public void setUserId(Long userId) {
-        this.userId = userId;
+        this.id = userId;
     }
 
     public String getUsername() {
