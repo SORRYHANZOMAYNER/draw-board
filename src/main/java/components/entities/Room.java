@@ -15,6 +15,9 @@ public class Room {
     private Long id;
     public String name;
     public Date created_at;
+    public Long ownerId;
+    public Long createdById;
+
     public Room(String name){
         this.name = name;
         this.created_at = new Date();
@@ -45,5 +48,22 @@ public class Room {
 
     public Long getId() {
         return id;
+    }
+
+
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public Long getCreated_by_id() {
+        return createdById;
+    }
+
+    public void setCreated_by_id(Long createdById) {
+        this.createdById = createdById;
     }
 }
