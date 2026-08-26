@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
+
 @Service
 public class AuthService {
     private final UserRepository userRepository;
@@ -37,6 +39,7 @@ public class AuthService {
         userat.setUsername(request.getUsername().trim());
         userat.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         userat.setRole(Role.STUDENT);
+        userat.setCreateAt(new Date());
         return toAuthResponse(userRepository.save(userat),true);
     }
     public AuthResponse getMe(Userat user) {

@@ -11,13 +11,19 @@ public class Userat {
     private Long id;
     @Column(unique = true)
     private String username;
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.STUDENT;
     private Date createAt;
     @Column(nullable = false)
     private String passwordHash;
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
     }
 
     public String getPasswordHash() {
