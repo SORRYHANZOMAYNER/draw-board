@@ -27,13 +27,13 @@ public class AuthService {
     }
     public AuthResponse  register(RegisterRequest request){
         if (request.getUsername() == null || request.getUsername().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Поле имя не должно быть пустым");
         }
         if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Поле пароль не должно быть пустым");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такое имя уже занято");
         }
         Userat userat = new Userat();
         userat.setUsername(request.getUsername().trim());
@@ -47,12 +47,12 @@ public class AuthService {
     }
     public AuthResponse  login(LoginRequest request){
         if (request.getUsername() == null || request.getPassword() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username and password are required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нужно заполнить оба поля");
         }
         Userat userat = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неверный логин или пароль"));
         if (!passwordEncoder.matches(request.getPassword(), userat.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неверный логин или пароль");
         }
         return toAuthResponse(userat, true);
     }

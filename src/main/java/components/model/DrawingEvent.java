@@ -16,6 +16,9 @@ public class DrawingEvent {
     private String data;
     private Double imageWidth;
     private Double imageHeight;
+    private String shapeId;
+    private String shapeType;
+    private Double strokeWidth;
 
     public String getStickerId() {
         return stickerId;
@@ -130,5 +133,29 @@ public class DrawingEvent {
 
     public void setWidth(Double width) {
         this.width = width;
+    }
+
+    public String getShapeId() {
+        return shapeId;
+    }
+
+    public void setShapeId(String shapeId) {
+        this.shapeId = shapeId;
+    }
+
+    public String getShapeType() {
+        return shapeType;
+    }
+
+    public void setShapeType(String shapeType) {
+        this.shapeType = shapeType;
+    }
+
+    public Double getStrokeWidth() {
+        return strokeWidth;
+    }
+
+    public void setStrokeWidth(Double strokeWidth) {
+        this.strokeWidth = strokeWidth;
     }
 }

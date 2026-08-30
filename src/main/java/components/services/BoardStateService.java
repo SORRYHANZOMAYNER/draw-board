@@ -1,4 +1,6 @@
 package components.services;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import components.entities.DrawingEventEntity;
 import components.model.DrawingEvent;
 import components.repositories.DrawingEventRepository;
@@ -54,6 +56,9 @@ public class BoardStateService {
         copy.setHeight(source.getHeight());
         copy.setStickerId(source.getStickerId());
         copy.setText(source.getText());
+        copy.setShapeId(source.getShapeId());
+        copy.setShapeType(source.getShapeType());
+        copy.setStrokeWidth(source.getStrokeWidth());
         return copy;
     }
 }

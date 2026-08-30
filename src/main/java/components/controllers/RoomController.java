@@ -2,6 +2,7 @@ package components.controllers;
 
 import components.config.SecurityUtils;
 import components.dto.CreateRoomRequest;
+import components.dto.UpdateRoomRequest;
 import components.dto.UserBriefResponse;
 import components.entities.Room;
 import components.entities.Userat;
@@ -33,6 +34,21 @@ public class RoomController {
         this.roomService = roomService;
         this.boardStateService = boardStateService;
         this.userRepository = userRepository;
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Room> renameRoom(
+            @PathVariable Long id,
+            @RequestBody UpdateRoomRequest request
+    ) {
+        Userat user = SecurityUtils.getCurrentUser();
+        return ResponseEntity.ok(roomService.renameRoom(user, id, request.getName()));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
+        Userat user = SecurityUtils.getCurrentUser();
+        roomService.deleteRoom(user, id);
+        return ResponseEntity.noContent().build();
     }
 
     /** Доски текущего ученика */

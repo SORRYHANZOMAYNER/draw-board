@@ -2,6 +2,7 @@ package components.services;
 import components.dto.CreateRoomRequest;
 import components.entities.Room;
 import components.entities.Userat;
+import components.repositories.DrawingEventRepository;
 import components.repositories.RoomRepository;
 import components.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,14 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final RoomAccessService roomAccessService;
+    private final DrawingEventRepository drawingEventRepository;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, UserRepository userRepository, RoomAccessService roomAccessService) {
+    public RoomService(RoomRepository roomRepository, UserRepository userRepository, RoomAccessService roomAccessService, DrawingEventRepository drawingEventRepository) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
         this.roomAccessService = roomAccessService;
+        this.drawingEventRepository = drawingEventRepository;
     }
 
     public Room createOwnRoom(Userat student, CreateRoomRequest request) {
@@ -31,6 +34,30 @@ public class RoomService {
         room.setOwnerId(student.getId());
         room.setCreatedById(student.getId());
         return roomRepository.save(room);
+    }
+
+    public Room renameRoom(Userat user, Long id, String name) {
+        if (name == null || name.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room name is required");
+        }
+
+        Room room = getRoom(user, id);
+        room.setName(name.trim());
+        return roomRepository.save(room);
+    }
+
+    public void deleteRoom(Userat user, Long id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room id is required");
+        }
+
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+        roomAccessService.requireOwner(user, room);
+
+        drawingEventRepository.findByRoomIdOrderByIdAsc(id)
+                .forEach(drawingEventRepository::delete);
+        roomRepository.delete(room);
     }
 
     public Room createRoomForStudent(Userat teacher, Long studentId, CreateRoomRequest request) {
