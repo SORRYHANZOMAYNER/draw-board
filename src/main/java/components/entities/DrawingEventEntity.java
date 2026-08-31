@@ -16,7 +16,7 @@ public class DrawingEventEntity {
     private Long roomId;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String payload;
 
     @Column(nullable = false)
