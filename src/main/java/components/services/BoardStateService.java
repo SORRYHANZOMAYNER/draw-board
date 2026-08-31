@@ -59,6 +59,9 @@ public class BoardStateService {
         copy.setShapeId(source.getShapeId());
         copy.setShapeType(source.getShapeType());
         copy.setStrokeWidth(source.getStrokeWidth());
+        copy.setTextId(source.getTextId());
+        copy.setFontSize(source.getFontSize());
+        copy.setLocked(source.getLocked());
         return copy;
     }
 }

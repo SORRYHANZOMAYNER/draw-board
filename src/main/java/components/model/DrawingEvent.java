@@ -19,6 +19,9 @@ public class DrawingEvent {
     private String shapeId;
     private String shapeType;
     private Double strokeWidth;
+    private String textId;
+    private Double fontSize;
+    private Boolean locked;
 
     public String getStickerId() {
         return stickerId;
@@ -157,5 +160,29 @@ public class DrawingEvent {
 
     public void setStrokeWidth(Double strokeWidth) {
         this.strokeWidth = strokeWidth;
+    }
+
+    public String getTextId() {
+        return textId;
+    }
+
+    public void setTextId(String textId) {
+        this.textId = textId;
+    }
+
+    public Double getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(Double fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
     }
 }

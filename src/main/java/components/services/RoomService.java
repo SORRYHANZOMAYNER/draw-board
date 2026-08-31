@@ -32,7 +32,6 @@ public class RoomService {
         room.setName(request.getName().trim());
         room.setCreatedAt(new Date());
         room.setOwnerId(student.getId());
-        room.setCreatedById(student.getId());
         return roomRepository.save(room);
     }
 
@@ -71,7 +70,6 @@ public class RoomService {
         room.setName(request.getName().trim());
         room.setCreatedAt(new Date());
         room.setOwnerId(student.getId());
-        room.setCreatedById(teacher.getId());
         return roomRepository.save(room);
     }
 

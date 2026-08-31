@@ -9,6 +9,7 @@ import components.entities.Userat;
 import components.model.DrawingEvent;
 import components.repositories.UserRepository;
 import components.services.BoardStateService;
+import components.services.RoomAccessService;
 import components.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

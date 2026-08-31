@@ -13,8 +13,10 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     private final WebSocketJwtHandshakeInterceptor handshakeInterceptor;
     private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
+
     public WebSocketConfig(
             WebSocketJwtHandshakeInterceptor handshakeInterceptor,
             StompAuthChannelInterceptor stompAuthChannelInterceptor
@@ -22,26 +24,30 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.handshakeInterceptor = handshakeInterceptor;
         this.stompAuthChannelInterceptor = stompAuthChannelInterceptor;
     }
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompAuthChannelInterceptor);
-    }
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Точка подключения WebSocket
         registry.addEndpoint("/ws")
                 .addInterceptors(handshakeInterceptor)
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompAuthChannelInterceptor);
+    }
+
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(512 * 1024);
-        registration.setSendBufferSizeLimit(512 * 1024);
+        registration.setMessageSizeLimit(2 * 1024 * 1024);
+        registration.setSendBufferSizeLimit(2 * 1024 * 1024);
+        registration.setSendTimeLimit(20 * 1000);
     }
 }
