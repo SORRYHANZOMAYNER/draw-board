@@ -22,6 +22,26 @@ public class DrawingEvent {
     private String textId;
     private Double fontSize;
     private Boolean locked;
+    /** Общий id вставленной группы (перемещение/масштаб на клиенте). */
+    private String templateInstanceId;
+    /** Id сохранённого шаблона в БД, если есть. */
+    private Long savedTemplateId;
+
+    public String getTemplateInstanceId() {
+        return templateInstanceId;
+    }
+
+    public void setTemplateInstanceId(String templateInstanceId) {
+        this.templateInstanceId = templateInstanceId;
+    }
+
+    public Long getSavedTemplateId() {
+        return savedTemplateId;
+    }
+
+    public void setSavedTemplateId(Long savedTemplateId) {
+        this.savedTemplateId = savedTemplateId;
+    }
 
     public String getStickerId() {
         return stickerId;

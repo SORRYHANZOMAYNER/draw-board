@@ -2,6 +2,7 @@ package components.controllers;
 
 import components.model.DrawingEvent;
 import components.services.BoardStateService;
+import components.services.TemplateEventGuard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,13 +17,16 @@ public class DrawingController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final BoardStateService boardStateService;
+    private final TemplateEventGuard templateEventGuard;
 
     public DrawingController(
             SimpMessagingTemplate messagingTemplate,
-            BoardStateService boardStateService
+            BoardStateService boardStateService,
+            TemplateEventGuard templateEventGuard
     ) {
         this.messagingTemplate = messagingTemplate;
         this.boardStateService = boardStateService;
+        this.templateEventGuard = templateEventGuard;
     }
 
     @MessageMapping("/room/{roomId}/draw")
@@ -31,6 +35,7 @@ public class DrawingController {
             DrawingEvent event
     ) {
         event.setRoomId(roomId);
+        templateEventGuard.requireTeacherForGroupManipulation(event);
         try {
             boardStateService.addEvent(roomId, event);
             messagingTemplate.convertAndSend("/topic/room/" + roomId, event);

@@ -62,6 +62,8 @@ public class BoardStateService {
         copy.setTextId(source.getTextId());
         copy.setFontSize(source.getFontSize());
         copy.setLocked(source.getLocked());
+        copy.setTemplateInstanceId(source.getTemplateInstanceId());
+        copy.setSavedTemplateId(source.getSavedTemplateId());
         return copy;
     }
 }

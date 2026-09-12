@@ -7,6 +7,7 @@ import components.model.DrawingEvent;
 import components.services.BoardStateService;
 import components.services.RoomAccessService;
 import components.services.RoomService;
+import components.services.TemplateEventGuard;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,17 +26,20 @@ public class BoardEventController {
     private final BoardStateService boardStateService;
     private final RoomAccessService roomAccessService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final TemplateEventGuard templateEventGuard;
 
     public BoardEventController(
             RoomService roomService,
             BoardStateService boardStateService,
             RoomAccessService roomAccessService,
-            SimpMessagingTemplate messagingTemplate
+            SimpMessagingTemplate messagingTemplate,
+            TemplateEventGuard templateEventGuard
     ) {
         this.roomService = roomService;
         this.boardStateService = boardStateService;
         this.roomAccessService = roomAccessService;
         this.messagingTemplate = messagingTemplate;
+        this.templateEventGuard = templateEventGuard;
     }
 
     @PostMapping
@@ -50,6 +54,7 @@ public class BoardEventController {
         }
 
         roomAccessService.checkAccess(SecurityUtils.getCurrentUser(), room);
+        templateEventGuard.requireTeacherForGroupManipulation(event);
 
         event.setRoomId(roomId);
         boardStateService.addEvent(roomId, event);
