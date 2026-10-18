@@ -1,8 +1,12 @@
 HELP.md
 target/
+.env
+*.tar
+*.deb
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+drawboard-backend.tar
 
 ### STS ###
 .apt_generated

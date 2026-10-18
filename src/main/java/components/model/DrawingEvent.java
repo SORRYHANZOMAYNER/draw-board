@@ -26,6 +26,16 @@ public class DrawingEvent {
     private String templateInstanceId;
     /** Id сохранённого шаблона в БД, если есть. */
     private Long savedTemplateId;
+    /** Id вкладки-отправителя — клиент игнорирует своё эхо. */
+    private String clientId;
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
     public String getTemplateInstanceId() {
         return templateInstanceId;
