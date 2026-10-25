@@ -4,8 +4,8 @@ set -e
 
 PROMETHEUS_VERSION=2.46.0
 NODE_EXPORTER_VERSION=1.6.1
-SLAVE_IP="${SLAVE_IP:-81.90.28.225}"
-SERVER_IP=$(hostname -I | awk '{print $1}')
+MAIN_IP="$1"
+SLAVE_IP="$2"
 
 cleanup() {
   rm -rf \
@@ -94,7 +94,7 @@ scrape_configs:
 
   - job_name: node_exporter
     static_configs:
-      - targets: ['127.0.0.1:9100']
+      - targets: ['$MAIN_IP:9100']
         labels:
           server: main
       - targets: ['$SLAVE_IP:9100']
@@ -137,5 +137,5 @@ curl --retry 30 --retry-connrefused --retry-delay 1 -f http://127.0.0.1:9100/met
 curl --retry 30 --retry-connrefused --retry-delay 1 -f http://127.0.0.1:9090/-/ready > /dev/null
 curl --retry 30 --retry-connrefused --retry-delay 1 -f http://127.0.0.1:3000/login > /dev/null
 
-echo "Prometheus: http://$SERVER_IP:9090"
-echo "Grafana: http://$SERVER_IP:3000"
+echo "Prometheus: http://$MAIN_IP:9090"
+echo "Grafana: http://$MAIN_IP:3000"

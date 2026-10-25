@@ -14,9 +14,10 @@ set -a
 . "$ENV_FILE"
 set +a
 
-MASTER_HOST="${MASTER_HOST:-138.124.121.179}"
+MASTER_HOST="$1"
 MASTER_PORT=3306
 REPL_USER=repl
+: "${MASTER_HOST:?Укажите IP main первым параметром}"
 : "${REPL_PASS:?REPL_PASS не указан в $ENV_FILE}"
 
 systemctl enable --now mysql

@@ -3,19 +3,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-ENV_FILE="${ENV_FILE:-/root/drawboard.env}"
-
-if [ ! -f "$ENV_FILE" ]; then
-  echo "Не найден файл $ENV_FILE"
-  exit 1
-fi
-
-set -a
-. "$ENV_FILE"
-set +a
-
-: "${DB_PASS:?DB_PASS не указан в $ENV_FILE}"
-: "${JWT_SECRET:?JWT_SECRET не указан в $ENV_FILE}"
+. "${ENV_FILE:-/root/drawboard.env}"
 
 if [ -f drawboard-backend.tar ]; then
   docker load -i drawboard-backend.tar

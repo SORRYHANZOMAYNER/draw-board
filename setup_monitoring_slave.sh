@@ -3,7 +3,8 @@
 set -e
 
 NODE_EXPORTER_VERSION=1.6.1
-MAIN_IP=138.124.121.179
+MAIN_IP="$1"
+SLAVE_IP="$2"
 
 apt update
 apt install -y curl tar
@@ -42,4 +43,4 @@ if command -v ufw >/dev/null 2>&1 && ufw status | grep -q 'Status: active'; then
 fi
 
 curl -f http://127.0.0.1:9100/metrics > /dev/null
-echo "Node Exporter: http://81.90.28.225:9100"
+echo "Node Exporter: http://$SLAVE_IP:9100"

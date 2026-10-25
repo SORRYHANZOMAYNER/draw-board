@@ -5,13 +5,15 @@ set -e
 BACKEND_REPO="$1"
 FRONTEND_REPO="$2"
 BACKUP_DIR="$3"
-MODE="${4:-production}"
-DOMAIN="${5:-drawboard.duckdns.org}"
-EMAIL="${6:-egoraksenov821@gmail.com}"
+MAIN_IP="$4"
+SLAVE_IP="$5"
+MODE="${6:-production}"
+DOMAIN="${7:-drawboard.duckdns.org}"
+EMAIL="${8:-egoraksenov821@gmail.com}"
 
-if [ -z "$BACKEND_REPO" ] || [ -z "$FRONTEND_REPO" ] || [ -z "$BACKUP_DIR" ]; then
+if [ -z "$BACKEND_REPO" ] || [ -z "$FRONTEND_REPO" ] || [ -z "$BACKUP_DIR" ] || [ -z "$MAIN_IP" ] || [ -z "$SLAVE_IP" ]; then
   echo "Использование:"
-  echo "$0 <backend_git_url> <frontend_git_url> <путь_к_бэкапу> [production|local] [домен] [email]"
+  echo "$0 <backend_git_url> <frontend_git_url> <путь_к_бэкапу> <main_ip> <slave_ip> [production|local] [домен] [email]"
   exit 1
 fi
 
@@ -42,7 +44,7 @@ bash /root/board-backend/makedb.sh
 bash /root/board-backend/restore_db.sh "$BACKUP_DIR"
 
 if command -v ufw >/dev/null 2>&1 && ufw status | grep -q 'Status: active'; then
-  ufw allow from 81.90.28.225 to any port 3306 proto tcp
+  ufw allow from "$SLAVE_IP" to any port 3306 proto tcp
 fi
 
 cd /root/board-backend
@@ -78,12 +80,11 @@ docker build -t drawboard-frontend:latest .
 docker save drawboard-frontend:latest -o drawboard-frontend.tar
 bash ./makefrnt.sh
 
-bash /root/board-backend/setup_monitoring_main.sh
+bash /root/board-backend/setup_cms.sh "$MAIN_IP"
+bash /root/board-backend/setup_monitoring_main.sh "$MAIN_IP" "$SLAVE_IP"
 
 if [ -d /root/logging-packages ]; then
   bash /root/board-backend/setup_logging_main.sh /root/logging-packages
-else
-  echo "Логирование пропущено: сначала отправьте пакеты в /root/logging-packages"
 fi
 
 rm -f /root/board-backend/drawboard-backend.tar

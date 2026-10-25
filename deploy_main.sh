@@ -4,12 +4,14 @@ set -e
 
 BACKEND_REPO="$1"
 FRONTEND_REPO="$2"
-MODE="${3:-production}"
-DOMAIN="${4:-drawboard.duckdns.org}"
-EMAIL="${5:-egoraksenov821@gmail.com}"
+MAIN_IP="$3"
+SLAVE_IP="$4"
+MODE="${5:-production}"
+DOMAIN="${6:-drawboard.duckdns.org}"
+EMAIL="${7:-egoraksenov821@gmail.com}"
 
-if [ -z "$BACKEND_REPO" ] || [ -z "$FRONTEND_REPO" ]; then
-  echo "Использование: $0 <backend_git_url> <frontend_git_url> [production|local] [домен] [email]"
+if [ -z "$BACKEND_REPO" ] || [ -z "$FRONTEND_REPO" ] || [ -z "$MAIN_IP" ] || [ -z "$SLAVE_IP" ]; then
+  echo "Использование: $0 <backend_git_url> <frontend_git_url> <main_ip> <slave_ip> [production|local] [домен] [email]"
   exit 1
 fi
 
@@ -42,6 +44,7 @@ docker volume create letsencrypt
 docker volume create certbot-www
 
 if command -v ufw >/dev/null 2>&1 && ufw status | grep -q 'Status: active'; then
+  ufw allow from "$SLAVE_IP" to any port 3306 proto tcp
   ufw allow 80/tcp
   ufw allow 443/tcp
   ufw allow 3000/tcp
@@ -66,12 +69,11 @@ docker build -t drawboard-frontend:latest .
 docker save drawboard-frontend:latest -o drawboard-frontend.tar
 bash ./makefrnt.sh
 
-bash /root/board-backend/setup_monitoring_main.sh
+bash /root/board-backend/setup_cms.sh "$MAIN_IP"
+bash /root/board-backend/setup_monitoring_main.sh "$MAIN_IP" "$SLAVE_IP"
 
 if [ -d /root/logging-packages ]; then
   bash /root/board-backend/setup_logging_main.sh /root/logging-packages
-else
-  echo "Логирование пропущено: пакеты не найдены в /root/logging-packages"
 fi
 
 rm -f /root/board-backend/drawboard-backend.tar

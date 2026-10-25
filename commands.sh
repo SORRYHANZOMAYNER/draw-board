@@ -1,7 +1,16 @@
+#!/bin/bash
+
+IP_MAIN="$1"
+
+if [ -z "$IP_MAIN" ]; then
+  echo "Использование: $0 <ip_main>"
+  exit 1
+fi
+
 docker compose build
 docker build -t drawboard-backend:latest .
 docker save drawboard-backend:latest -o drawboard-backend.tar
-scp drawboard-backend.tar.gz root@138.124.121.179:/root/board-backend
+scp drawboard-backend.tar "root@${IP_MAIN}:/root/board-backend"
 
 
 docker load -i drawboard-backend.tar
