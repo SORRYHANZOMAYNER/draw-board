@@ -221,6 +221,8 @@ sudo SLAVE_IP=IP_SLAVE bash /root/board-backend/setup_monitoring_main.sh
 
 ```bash
 sudo systemctl is-active elasticsearch logstash kibana filebeat
+sudo ss -lntp | grep -E ':(9200|5400|5601)'
+sudo filebeat test output
 curl -f http://127.0.0.1:9200
 curl -f http://127.0.0.1:5601/api/status
 curl 'http://127.0.0.1:9200/_cat/indices/drawboard-logs-*?v'
@@ -228,13 +230,25 @@ curl 'http://127.0.0.1:9200/_cat/indices/drawboard-logs-*?v'
 
 Путь лога: `Docker JSON logs -> Filebeat -> Logstash:5400 -> Elasticsearch -> Kibana`.
 
-Elasticsearch и Kibana слушают только `127.0.0.1`; открывать 9200 и 5601 в UFW не нужно. HTTPS-сертификат сайта им также не нужен. Kibana открывается через SSH-туннель:
+Elasticsearch и Kibana слушают только `127.0.0.1`; открывать 9200 и 5601 в UFW не нужно. Поэтому адрес `http://IP_MAIN:5601` напрямую не откроется. HTTPS-сертификат сайта им также не нужен. Для просмотра Kibana открыть SSH-туннель из PowerShell Windows:
 
-```bash
-ssh -L 5601:127.0.0.1:5601 convey99@IP_MAIN
+```powershell
+ssh -L 5601:127.0.0.1:5601 ПОЛЬЗОВАТЕЛЬ@IP_MAIN
 ```
 
-Пока SSH открыт, перейти в браузере на `http://127.0.0.1:5601`. Представление данных называется `Drawboard logs` и соответствует индексу `drawboard-logs-*`.
+Для текущей тестовой VM команда выглядит так:
+
+```powershell
+ssh -L 5601:127.0.0.1:5601 vboxuser@192.168.1.40
+```
+
+Пока окно SSH открыто, перейти в браузере на `http://127.0.0.1:5601`. Представление данных называется `Drawboard logs` и соответствует индексу `drawboard-logs-*`.
+
+Скрипт сам создаёт рабочие каталоги Logstash и назначает владельца `logstash:logstash`. Это предотвращает ошибку `Path /var/lib/logstash/queue must be a writable directory`. Если проверка порта `5400` не прошла, посмотреть причину:
+
+```bash
+sudo journalctl -u logstash -n 80 --no-pager
+```
 
 ## Подготовка slave
 

@@ -74,10 +74,18 @@ cat > /etc/logstash/jvm.options.d/heap.options <<'EOF'
 -Xmx256m
 EOF
 
+mkdir -p /etc/systemd/system/logstash.service.d
+cat > /etc/systemd/system/logstash.service.d/memory.conf <<'EOF'
+[Service]
+Environment="LS_JAVA_OPTS=-Xms256m -Xmx256m"
+EOF
+
 cat > /etc/logstash/logstash.yml <<'EOF'
 path.data: /var/lib/logstash
 path.config: /etc/logstash/conf.d
 path.logs: /var/log/logstash
+pipeline.workers: 1
+pipeline.batch.size: 50
 EOF
 
 cat > /etc/logstash/conf.d/drawboard.conf <<'EOF'
@@ -98,6 +106,9 @@ EOF
 
 chown -R root:logstash /etc/logstash/logstash.yml /etc/logstash/conf.d /etc/logstash/jvm.options.d
 chmod 640 /etc/logstash/logstash.yml /etc/logstash/conf.d/drawboard.conf /etc/logstash/jvm.options.d/heap.options
+
+mkdir -p /var/lib/logstash/queue /var/lib/logstash/dead_letter_queue /var/log/logstash
+chown -R logstash:logstash /var/lib/logstash /var/log/logstash
 
 cat > /etc/filebeat/filebeat.yml <<'EOF'
 filebeat.inputs:
@@ -121,11 +132,14 @@ EOF
 chown root:root /etc/filebeat/filebeat.yml
 chmod 600 /etc/filebeat/filebeat.yml
 
-/usr/share/logstash/bin/logstash --path.settings /etc/logstash --config.test_and_exit -f /etc/logstash/conf.d/drawboard.conf
+runuser -u logstash -- /usr/share/logstash/bin/logstash --path.settings /etc/logstash --config.test_and_exit -f /etc/logstash/conf.d/drawboard.conf
 filebeat test config -e
 
+chown -R logstash:logstash /var/lib/logstash /var/log/logstash
+
 systemctl daemon-reload
-systemctl enable --now elasticsearch
+systemctl enable elasticsearch logstash kibana filebeat
+systemctl restart elasticsearch
 
 for i in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:9200 >/dev/null; then
@@ -136,10 +150,19 @@ done
 
 curl -fsS http://127.0.0.1:9200 >/dev/null
 
-systemctl enable --now logstash
-systemctl enable --now kibana
+systemctl restart logstash
+systemctl restart kibana
 
 for i in $(seq 1 90); do
+  if ss -ltn | grep -q ':5400 '; then
+    break
+  fi
+  sleep 2
+done
+
+ss -ltn | grep -q ':5400 '
+
+for i in $(seq 1 180); do
   if curl -fsS http://127.0.0.1:5601/api/status >/dev/null; then
     break
   fi
@@ -155,7 +178,7 @@ curl -fsS -X POST http://127.0.0.1:5601/api/data_views/data_view \
 
 sleep 20
 filebeat test output
-systemctl enable --now filebeat
+systemctl restart filebeat
 
 systemctl is-active --quiet elasticsearch
 systemctl is-active --quiet logstash
